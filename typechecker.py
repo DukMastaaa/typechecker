@@ -109,7 +109,7 @@ def type_check(function: Callable) -> Callable:
 
             value = args[index] if index < len(args) else kwargs[param.name]
             if not check_equality(value, param.annotation):
-                raise TypeError(f"Expected {param.annotation} for parameter {param.name}, got {type(args[index])} instead")
+                raise TypeError(f"Expected {param.annotation} for parameter {param.name}, got {type(value)} instead")
 
         result = function(*args, **kwargs)
         if return_annotation != inspect.Signature.empty:

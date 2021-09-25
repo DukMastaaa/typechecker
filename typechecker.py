@@ -73,6 +73,35 @@ def _handle_literal(value: Any, annotation_args: Tuple[Any, ...]) -> bool:
     return any(value == literal_element for literal_element in annotation_args)
 
 
+def _handle_callable(value: Any, annotation_args: Tuple[List[Any], Any]) -> bool:
+    """
+    Returns whether `value`'s type hints for its parameters and return value
+    are the same as the annotations of the Callable[].
+
+    Returns `True` for functions which are not introspectable.
+    Returns `False` for parameters which are not type hinted, and do not have a
+    corresponding `Any` annotation.
+    """
+
+    if not isinstance(value, Callable):
+        return False
+
+    # Here, we wish to compare a given callable with the annotation provided.
+    # The only way to verify this information is through the type hints of the function.
+    # Note that the `Callable` syntax does not indicate optional or keyword arguments,
+    # so those are ignored if present.
+    param_annotations, return_annotation = annotation_args
+    signature = inspect.signature(function)
+    indicated_return_annotation = signature.return_annotation
+
+    # have to write functions to convert between `typing` and builtin
+    if indicated_return_annotation != return_annotation:
+        return False
+    
+    print("callable functionality WIP")
+    pass
+
+
 def _handle_any(value: Any, annotation_args: Tuple) -> bool:
     return True
 
@@ -89,6 +118,7 @@ _TYPING_MODULE_DISPATCH_TABLE.update({
     set: _handle_set,
     Union: _handle_union,
     Literal: _handle_literal,
+    Callable: _handle_callable,
     Any: _handle_any
 })
 
